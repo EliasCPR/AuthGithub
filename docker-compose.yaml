@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+# ===================================================================
+  nlw_node_heat:
+    container_name: nlw_node_heat
+    hostname: nlw_node_heat
+    image: nlw_node_heat:dev
+
+    build:
+      context: .
+      dockerfile: .docker/development.dockerfile
+    volumes:
+      - .:/opt/app
+      - /opt/app/node_modules
+      - ./prisma/schema.prisma:/opt/app/prisma/schema.prisma
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    working_dir: /opt/app
+    environment:
+      NODE_ENV: development
+      MONGO_URI: mongodb://nlw_node_heat-mongodb:27017/ressarcimento
+    networks:
+      - nlw_node_heat-private-network
+    entrypoint: yarn start
+
+  nlw_node_heat-postgres:
+    container_name: nlw_node_heat-postgres
+    hostname: nlw_node_heat-postgres
+    image: postgres:latest
+
+    ports:
+      - 5432:5432
+    networks:
+      - nlw_node_heat-private-network
+    logging:
+      driver: none
+
+# ===================================================================
+networks:
+  nlw_node_heat-private-network:
+    driver: bridge
