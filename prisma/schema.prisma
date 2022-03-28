@@ -17,8 +17,9 @@ model User {
   avatar_url String
   login      String
 
-  @@map("users")
+  history  History[]
   messages Message[]
+  @@map("users")
 }
 
 model Message {
@@ -29,4 +30,15 @@ model Message {
   user_id    String
 
   @@map("messages")
+}
+
+model History {
+  id         String   @id @default(cuid())
+  history    String
+  title      String
+  created_at DateTime @default(now())
+
+  @@map("histories")
+  user   User?   @relation(fields: [user_id], references: [id])
+  user_id String?
 }
